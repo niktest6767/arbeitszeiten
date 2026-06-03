@@ -95,7 +95,7 @@ h2 {
   box-shadow: 0 8px 24px rgba(20, 28, 42, 0.08);
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
+  flex: 0 0 aut; 
   text-decoration: none;
   cursor: pointer;
 }
@@ -182,7 +182,7 @@ h2 {
 }
 
 .metric-card {
-  min-height: 142px;
+  min-height: 150px;
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -197,8 +197,8 @@ h2 {
 }
 
 .metric-card-large {
-  grid-column: 1 / -1;
-  min-height: 196px;
+  grid-column: auto;
+  min-height: 150px;
 }
 
 .metric-card.accent {
@@ -229,11 +229,10 @@ h2 {
 }
 
 .worked-value {
-  flex: 1;
   align-items: center;
   justify-content: center;
-  padding-top: 6px;
-  font-size: 5.4rem;
+  padding-top: 0;
+  font-size: 3.6rem;
 }
 
 .worked-value span:last-child {
@@ -388,7 +387,7 @@ h2 {
   place-items: center;
   overflow-y: auto;
   backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24ppx);
 }
 
 .entry-modal {
@@ -534,17 +533,13 @@ input:focus {
   }
 
   .summary-grid {
-    grid-template-columns: 1.2fr repeat(3, minmax(0, 0.85fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
-  }
-
-  .metric-card-large {
-    grid-column: auto;
   }
 
   .metric-card,
   .metric-card-large {
-    min-height: 210px;
+    min-height: 170px;
   }
 
   .panel {

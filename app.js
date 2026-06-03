@@ -224,11 +224,11 @@ function calendarYearSickEntries() {
   return state.entries.filter((entry) => entry.date.startsWith(year) && entry.sick && isCountedWorkday(entry.date));
 }
 
-function entriesUntilVisibleMonth() {
-  const visibleMonthEnd = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0);
+function calendarYearWorkEntries() {
+  const year = String(visibleMonth.getFullYear());
   return state.entries.filter((entry) => {
     if (entry.vacation || entry.sick || entry.holiday) return false;
-    return dateFromKey(entry.date) <= visibleMonthEnd;
+    return entry.date.startsWith(year);
   });
 }
 
@@ -458,7 +458,7 @@ function render() {
 
   const now = new Date();
   const entries = monthEntries();
-  const overtimeEntries = entriesUntilVisibleMonth();
+  const overtimeEntries = calendarYearWorkEntries();
   const worked = entries.reduce((sum, entry) => sum + Number(entry.hours || 0), 0);
   const overtime = Number(state.overtimeBalance || 0) + overtimeEntries.reduce((sum, entry) => sum + Number(entry.overtime || 0) - Number(entry.overtimeUsed || 0), 0);
   const calendarYear = visibleMonth.getFullYear();
@@ -474,7 +474,7 @@ function render() {
   selectors.vacationLeft.textContent = formatNumber(vacationLeft);
   selectors.vacationNote.textContent = `für ${calendarYear}`;
   selectors.overtimeHours.textContent = formatNumber(overtime);
-  selectors.overtimeNote.textContent = `Saldo bis ${formatMonthLabel(visibleMonth)}`;
+  selectors.overtimeNote.textContent = `für ${calendarYear}`;
   selectors.sickDays.textContent = formatNumber(sickDays);
   selectors.sickNote.textContent = `für ${calendarYear}`;
 }
