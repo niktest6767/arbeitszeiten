@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f5f7" />
+    <title>Arbeitszeiten</title>
+    <link rel="stylesheet" href="styles.css?v=26" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="Kopfbereich">
+        <div>
+          <h1 id="greetingTitle">Arbeitszeiten</h1>
+        </div>
+        <div class="top-actions">
+          <a class="icon-button" id="exportButton" href="#" download="arbeitszeiten.xls" aria-label="Arbeitszeiten exportieren">
+            <span class="export-glyph" aria-hidden="true"></span>
+          </a>
+          <a class="icon-button profile-link" href="profile.html" aria-label="Profil öffnen">
+            <span class="profile-glyph" aria-hidden="true"></span>
+          </a>
+        </div>
+      </section>
+      <p class="export-status" id="exportStatus" aria-live="polite"></p>
+
+      <section class="summary-grid" aria-label="Monatsübersicht">
+        <article class="metric-card metric-card-large">
+          <div class="metric-card-top">
+            <div class="metric-label">Geleistete Stunden</div>
+          </div>
+          <div class="metric-value worked-value"><span id="workedHours">0</span><span>h</span></div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-label">Resturlaub</div>
+          <div class="metric-value compact"><span id="vacationLeft">0</span><span>Tage</span></div>
+          <p class="metric-note" id="vacationNote">für 2026</p>
+        </article>
+
+        <article class="metric-card accent">
+          <div class="metric-label">Überstunden</div>
+          <div class="metric-value compact"><span id="overtimeHours">0</span><span>h</span></div>
+          <p class="metric-note" id="overtimeNote">für Juni 2026</p>
+        </article>
+      </section>
+
+      <section class="calendar-panel" aria-label="Arbeitszeiten Kalender">
+        <div class="calendar-header">
+          <button class="calendar-nav" type="button" id="previousMonthButton" aria-label="Vorheriger Monat">‹</button>
+          <div>
+            <h2 id="calendarTitle">Kalender</h2>
+            <span id="calendarSubtitle">Monatsübersicht</span>
+          </div>
+          <button class="calendar-nav" type="button" id="nextMonthButton" aria-label="Nächster Monat">›</button>
+        </div>
+        <div class="weekday-grid" aria-hidden="true">
+          <span>Mo</span>
+          <span>Di</span>
+          <span>Mi</span>
+          <span>Do</span>
+          <span>Fr</span>
+          <span>Sa</span>
+          <span>So</span>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+
+      <div class="modal-overlay hidden" id="entryModal" role="dialog" aria-modal="true" aria-labelledby="entryModalTitle">
+        <section class="entry-modal">
+          <div class="modal-header">
+            <div>
+              <span id="entryModalDate">Datum</span>
+              <h2 id="entryModalTitle">Tag bearbeiten</h2>
+            </div>
+            <button class="modal-close" type="button" id="closeEntryModal" aria-label="Fenster schließen">×</button>
+          </div>
+          <form class="entry-form" id="calendarEntryForm">
+            <label>
+              <span>Start</span>
+              <input id="entryStartTime" type="time" value="08:00" />
+            </label>
+            <label>
+              <span>Ende</span>
+              <input id="entryEndTime" type="time" value="17:00" />
+            </label>
+            <label>
+              <span>Pause</span>
+              <input id="entryBreakMinutes" type="number" min="0" max="240" step="5" value="30" inputmode="numeric" />
+            </label>
+            <label>
+              <span>Überstunden</span>
+              <input id="entryOvertime" type="number" min="0" max="24" step="0.25" value="0" inputmode="decimal" />
+            </label>
+            <label>
+              <span>Überstunden genutzt</span>
+              <input id="entryOvertimeUsed" type="number" min="0" max="24" step="0.25" value="0" inputmode="decimal" />
+            </label>
+            <label class="switch-row">
+              <span>Urlaubstag</span>
+              <input id="entryVacation" type="checkbox" />
+            </label>
+            <label class="switch-row">
+              <span>Kranktag</span>
+              <input id="entrySick" type="checkbox" />
+            </label>
+            <button class="primary-button" type="submit">Speichern</button>
+            <button class="delete-button" type="button" id="deleteEntryButton">Eintrag löschen</button>
+          </form>
+        </section>
+      </div>
+
+    </main>
+
+    <script src="app.js?v=26"></script>
+  </body>
+</html>
