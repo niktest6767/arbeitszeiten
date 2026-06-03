@@ -386,17 +386,22 @@ h2 {
   padding: 18px;
   display: grid;
   place-items: center;
+  overflow-y: auto;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 
 .entry-modal {
   width: min(100%, 460px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 28px 70px rgba(20, 28, 42, 0.18);
   padding: 18px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-header {
@@ -596,5 +601,15 @@ input:focus {
 
   .entry-form {
     grid-template-columns: 1fr;
+  }
+
+  .modal-overlay {
+    align-items: start;
+    padding: 10px;
+  }
+
+  .entry-modal {
+    max-height: calc(100dvh - 20px);
+    padding: 14px;
   }
 }
