@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
     <title>Profil - Arbeitszeiten</title>
-    <link rel="stylesheet" href="styles.css?v=29" />
+    <link rel="stylesheet" href="styles.css?v=30" />
   </head>
   <body>
     <main class="app-shell">
@@ -26,7 +26,7 @@
           </label>
           <label>
             <span>Wochenstunden</span>
-            <input id="weeklyHours" type="number" min="0" step="0.5" inputmode="decimal" />
+            <input id="weeklyHours" type="text" inputmode="decimal" />
           </label>
           <label>
             <span>Arbeitstage/Woche</span>
@@ -42,7 +42,7 @@
           </label>
           <label>
             <span>Überstunden vorhanden</span>
-            <input id="overtimeBalance" type="number" min="-999" max="999" step="0.25" inputmode="decimal" />
+            <input id="overtimeBalance" type="text" inputmode="decimal" />
           </label>
           <label>
             <span>Krankheitstage bisher</span>
@@ -54,6 +54,6 @@
       </section>
     </main>
 
-    <script src="profile.js?v=29"></script>
+    <script src="profile.js?v=30"></script>
   </body>
 </html>

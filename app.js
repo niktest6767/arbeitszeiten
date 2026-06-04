@@ -81,7 +81,7 @@ function applyProfileParams(currentState) {
   });
 
   numberFields.forEach((field) => {
-    const value = Number(params.get(field) || 0);
+    const value = parseDecimal(params.get(field));
     if (Number.isFinite(value)) nextState[field] = value;
   });
 
@@ -115,7 +115,7 @@ function dateFromKey(key) {
 }
 
 function isProfileWorkday(date) {
-  const workdays = Math.min(7, Math.max(1, Number(state.workdaysPerWeek || 5)));
+  const workdays = Math.min(7, Math.max(1, parseDecimal(state.workdaysPerWeek, 5)));
   const weekdayIndex = (date.getDay() + 6) % 7;
   return weekdayIndex < workdays;
 }
@@ -125,18 +125,26 @@ function isCountedWorkday(key) {
 }
 
 function formatNumber(value) {
+  const numericValue = parseDecimal(value);
   return new Intl.NumberFormat("de-DE", {
-    maximumFractionDigits: 1,
-    minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
-  }).format(value);
+    maximumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(numericValue) ? 0 : 1,
+  }).format(numericValue);
 }
 
 function formatMonthLabel(date) {
   return new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" }).format(date);
 }
 
+function parseDecimal(value, fallback = 0) {
+  const normalized = String(value ?? "").trim().replace(",", ".");
+  if (!normalized) return fallback;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 function exportNumber(value) {
-  return String(Number(value || 0)).replace(".", ",");
+  return String(parseDecimal(value)).replace(".", ",");
 }
 
 function escapeHtml(value) {
@@ -155,7 +163,7 @@ function timeToMinutes(value) {
 function calculateEntryHours(startValue, endValue, breakValue) {
   const start = timeToMinutes(startValue);
   let end = timeToMinutes(endValue);
-  const pause = Number(breakValue || 0);
+  const pause = parseDecimal(breakValue);
 
   if (end < start) end += 24 * 60;
 
@@ -180,10 +188,10 @@ function entryFromForm() {
   return {
     start: selectors.entryStartTime.value,
     end: selectors.entryEndTime.value,
-    breakMinutes: Number(selectors.entryBreakMinutes.value || 0),
+    breakMinutes: parseDecimal(selectors.entryBreakMinutes.value),
     hours: calculateEntryHours(selectors.entryStartTime.value, selectors.entryEndTime.value, selectors.entryBreakMinutes.value),
-    overtime: Number(selectors.entryOvertime.value || 0),
-    overtimeUsed: Number(selectors.entryOvertimeUsed.value || 0),
+    overtime: parseDecimal(selectors.entryOvertime.value),
+    overtimeUsed: parseDecimal(selectors.entryOvertimeUsed.value),
     vacation: false,
     sick: false,
     holiday: false,
@@ -215,7 +223,7 @@ function monthEntries() {
 }
 
 function calendarYearVacationEntries() {
-  const year = String(visibleMonth.getFullYear());
+  const year = String(visibleMonth.getFUllYear());
   return state.entries.filter((entry) => entry.date.startsWith(year) && entry.vacation && isCountedWorkday(entry.date));
 }
 
@@ -233,9 +241,9 @@ function calendarYearWorkEntries() {
 }
 
 function monthlyTarget() {
-  const weeklyHours = Number(state.weeklyHours || 0);
+  const weeklyHours = parseDecimal(state.weeklyHours);
   if (weeklyHours > 0) return (weeklyHours * 52) / 12;
-  return Number(state.monthlyTarget || 0);
+  return parseDecimal(state.monthlyTarget);
 }
 
 function greetingFor(date = new Date()) {
@@ -249,9 +257,9 @@ function buildExcelWorkbook() {
   state = loadState();
 
   const entries = [...state.entries].sort((a, b) => a.date.localeCompare(b.date));
-  const totalHours = entries.reduce((sum, entry) => sum + Number(entry.hours || 0), 0);
-  const totalOvertime = entries.reduce((sum, entry) => sum + Number(entry.overtime || 0), 0);
-  const totalOvertimeUsed = entries.reduce((sum, entry) => sum + Number(entry.overtimeUsed || 0), 0);
+  const totalHours = entries.reduce((sum, entry) => sum + parseDecimal(entry.hours), 0);
+  const totalOvertime = entries.reduce((sum, entry) => sum + parseDecimal(entry.overtime), 0);
+  const totalOvertimeUsed = entries.reduce((sum, entry) => sum + parseDecimal(entry.overtimeUsed), 0);
   const totalSickDays = entries.filter((entry) => entry.sick && isCountedWorkday(entry.date)).length;
   const totalHolidays = entries.filter((entry) => entry.holiday).length;
   const createdAt = new Intl.DateTimeFormat("de-DE", {
@@ -326,7 +334,7 @@ function buildExcelWorkbook() {
             <th></th>
             <th></th>
           </tr>
-          <tr><th>Kranktage gesamt</th><th colspan="9">${exportNumber(Number(state.sickUsed || 0) + totalSickDays)}</th></tr>
+          <tr><th>Kranktage gesamt</th><th colspan="9">${exportNumber(parseDecimal(state.sickUsed) + totalSickDays)}</th></tr>
           <tr><th>Feiertage markiert</th><th colspan="9">${exportNumber(totalHolidays)}</th></tr>
         </table>
       </body>
@@ -438,7 +446,7 @@ function renderCalendar() {
       : entry?.vacation
       ? "Urlaub"
       : entry
-        ? `${formatNumber(Number(entry.hours || 0))} h`
+        ? `${formatNumber(entry.hours)} h`
         : "";
 
     days.push(`
@@ -459,11 +467,11 @@ function render() {
   const now = new Date();
   const entries = monthEntries();
   const overtimeEntries = calendarYearWorkEntries();
-  const worked = entries.reduce((sum, entry) => sum + Number(entry.hours || 0), 0);
-  const overtime = Number(state.overtimeBalance || 0) + overtimeEntries.reduce((sum, entry) => sum + Number(entry.overtime || 0) - Number(entry.overtimeUsed || 0), 0);
+  const worked = entries.reduce((sum, entry) => sum + parseDecimal(entry.hours), 0);
+  const overtime = parseDecimal(state.overtimeBalance) + overtimeEntries.reduce((sum, entry) => sum + parseDecimal(entry.overtime) - parseDecimal(entry.overtimeUsed), 0);
   const calendarYear = visibleMonth.getFullYear();
-  const vacationLeft = Math.max(0, Number(state.vacationTotal || 0) - Number(state.vacationUsed || 0) - calendarYearVacationEntries().length);
-  const sickDays = Number(state.sickUsed || 0) + calendarYearSickEntries().length;
+  const vacationLeft = Math.max(0, parseDecimal(state.vacationTotal) - parseDecimal(state.vacationUsed) - calendarYearVacationEntries().length);
+  const sickDays = parseDecimal(state.sickUsed) + calendarYearSickEntries().length;
   const storedName = localStorage.getItem("arbeitszeiten-display-name");
   const name = String(state.displayName || storedName || "").trim();
 
@@ -491,7 +499,7 @@ selectors.previousMonthButton.addEventListener("click", () => {
 });
 
 selectors.nextMonthButton.addEventListener("click", () => {
-  visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
+  visibleMonth = new Date(visibleMonth.getFUllYear(), visibleMonth.getMonth() + 1, 1);
   render();
 });
 

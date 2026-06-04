@@ -48,8 +48,15 @@ function saveState() {
   localStorage.setItem("arbeitszeiten-display-name", state.displayName || "");
 }
 
+function parseDecimal(value, fallback = 0) {
+  const normalized = String(value ?? "").trim().replace(",", ".");
+  if (!normalized) return fallback;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 function monthlyTarget() {
-  return (Number(fields.weeklyHours.value || 0) * 52) / 12;
+  return (parseDecimal(fields.weeklyHours.value) * 52) / 12;
 }
 
 function profileQuery() {
@@ -72,12 +79,12 @@ function collectProfileState() {
   return {
     ...state,
     displayName: fields.displayName.value.trim(),
-    weeklyHours: Number(fields.weeklyHours.value || 0),
-    workdaysPerWeek: Number(fields.workdaysPerWeek.value || 0),
-    vacationTotal: Number(fields.vacationTotal.value || 0),
-    vacationUsed: Number(fields.vacationUsed.value || 0),
-    overtimeBalance: Number(fields.overtimeBalance.value || 0),
-    sickUsed: Number(fields.sickUsed.value || 0),
+    weeklyHours: parseDecimal(fields.weeklyHours.value),
+    workdaysPerWeek: parseDecimal(fields.workdaysPerWeek.value),
+    vacationTotal: parseDecimal(fields.vacationTotal.value),
+    vacationUsed: parseDecimal(fields.vacationUsed.value),
+    overtimeBalance: parseDecimal(fields.overtimeBalance.value),
+    sickUsed: parseDecimal(fields.sickUsed.value),
     monthlyTarget: monthlyTarget(),
   };
 }
